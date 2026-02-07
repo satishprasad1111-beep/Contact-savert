@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#4f46e5">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>SS Contact Manager</title>
+    <link rel="manifest" href="manifest.json">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📱</text></svg>">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        :root {
+            --primary: #4f46e5;
+            --primary-dark: #4338ca;
+            --secondary: #10b981;
+            --danger: #ef4444;
+            --gray-50: #f9fafb;
+            --gray-100: #f3f4f6;
+            --gray-200: #e5e7eb;
+            --gray-700: #374151;
+            --gray-900: #111827;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            --radius: 12px;
+            --font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+        }
+
+        body {
+            font-family: var(--font-family);
+            background: var(--gray-100);
+            color: var(--gray-900);
+            line-height: 1.5;
+            padding: 16px;
+            padding-bottom: 100px;
+            min-height: 100vh;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .container {
+            max-width: 500px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            padding: 24px 0;
+            margin-bottom: 24px;
+        }
+
+        h1 {
+            font-size: 28px;
+            color: var(--primary);
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .subtitle {
+            color: var(--gray-700);
+            font-size: 16px;
+        }
+
+        .card {
+            background: white;
+            border-radius: var(--radius);
+            padding: 24px;
+            margin-bottom: 24px;
+            box-shadow: var(--shadow);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--gray-700);
+            font-size: 15px;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 16px;
+            border: 2px solid var(--gray-200);
+            border-radius: 10px;
+            font-size: 16px;
+            font-family: inherit;
+            transition: border-color 0.2s;
+            background: white;
+            -webkit-appearance: none;
+            appearance: none;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        input[type="number"] {
+            -moz-appearance: textfield;
+        }
+
+        input[type="number"]::-webkit-outer-spin-button,
+        input[type="number"]::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        .btn {
+            display: block;
+            width: 100%;
+            padding: 18px;
+            border: none;
+            border-radius: 10px;
+            font-size: 17px;
+            font-weight: 600;
+            font-family: inherit;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: center;
+            margin-bottom: 12px;
+            letter-spacing: 0.5px;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:active {
+            background: var(--primary-dark);
+            transform: translateY(1px);
+        }
+
+        .btn-secondary {
+            background: var(--secondary);
+            color: white;
+        }
+
+        .btn-secondary:active {
+            opacity: 0.9;
+            transform: translateY(1px);
+        }
+
+        .btn-danger {
+            background: var(--danger);
+            color: white;
+        }
+
+        .btn-danger:active {
+            opacity: 0.9;
+            transform: translateY(1px);
+        }
+
+        .contacts-section {
+            margin-top: 32px;
+        }
+
+        .section-title {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            color: var(--gray-900);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .counter {
+            background: var(--primary);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .contacts-list {
+            list-style: none;
+        }
+
+        .contact-item {
+            background: white;
+            padding: 18px;
+            border-radius: var(--radius);
+            margin-bottom: 12px;
+            box-shadow: var(--shadow);
+            border-left: 4px solid var(--primary);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .contact-info {
+            flex: 1;
+        }
+
+        .contact-name {
+            font-weight: 600;
+            font-size: 16px;
+            color: var(--gray-900);
+            margin-bottom: 4px;
+            word-break: break-all;
+        }
+
+        .contact-number {
+            font-size: 15px;
+            color: var(--primary);
+            font-weight: 500;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 48px 24px;
+            color: var(--gray-700);
+        }
+
+        .empty-icon {
+            font-size: 48px;
+            margin-bottom: 16px;
+            display: block;
+        }
+
+        .action-buttons {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 16px;
+            background: linear-gradient(to top, var(--gray-100) 80%, transparent);
+            display: flex;
+            gap: 12px;
+            z-index: 100;
+        }
+
+        .action-buttons .btn {
+            margin: 0;
+            flex: 1;
+        }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%) translateY(-100px);
+            background: var(--danger);
+            color: white;
+            padding: 16px 24px;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            z-index: 1000;
+            transition: transform 0.3s ease;
+            font-weight: 500;
+            max-width: 90%;
+            text-align: center;
+        }
+
+        .notification.show {
+            transform: translateX(-50%) translateY(0);
+        }
+
+        @media (max-width: 480px) {
+            body {
+                padding: 12px;
+                padding-bottom: 100px;
+            }
+            
+            .card {
+                padding: 20px;
+            }
+            
+            h1 {
+                font-size: 24px;
+            }
+            
+            .btn {
+                padding: 16px;
+            }
+        }
+
+        @media (min-width: 768px) {
+            .container {
+                padding-top: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>📱 SS Contact Manager</h1>
+            <p class="subtitle">Convert call details to VCF contacts</p>
+        </header>
+
+        <main>
+            <div class="card">
+                <div class="form-group">
+                    <label for="mobile">Mobile Number *</label>
+                    <input 
+                        type="number" 
+                        id="mobile" 
+                        placeholder="Enter 10+ digit mobile number"
+                        inputmode="numeric"
+                        minlength="10"
+                        required
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label for="name">Contact Name (from Truecaller)</label>
+                    <input 
+                        type="text" 
+                        id="name" 
+                        placeholder="Paste contact name here"
+                        maxlength="50"
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label for="area">Area</label>
+                    <input 
+                        type="text" 
+                        id="area" 
+                        placeholder="Enter area code"
+                        maxlength="20"
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label for="service">Service</label>
+                    <select id="service">
+                        <option value="CCTV">CCTV</option>
+                        <option value="Laptop">Laptop</option>
+                        <option value="Electrician">Electrician</option>
+                        <option value="Inverter">Inverter</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="prefix">Prefix</label>
+                    <input 
+                        type="text" 
+                        id="prefix" 
+                        value="SS"
+                        maxlength="10"
+                    >
+                </div>
+
+                <button class="btn btn-primary" id="addBtn">
+                    ➕ Add Contact
+                </button>
+            </div>
+
+            <div class="contacts-section">
+                <div class="section-title">
+                    <span>Added Contacts</span>
+                    <span class="counter" id="counter">0</span>
+                </div>
+
+                <div id="contactsContainer">
+                    <div class="empty-state">
+                        <span class="empty-icon">📞</span>
+                        <p>No contacts added yet</p>
+                        <p style="font-size: 14px; margin-top: 8px;">Add contacts using the form above</p>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <div class="action-buttons">
+            <button class="btn btn-secondary" id="exportBtn">
+                📥 Export VCF
+            </button>
+            <button class="btn btn-danger" id="clearBtn">
+                🗑️ Clear All
+            </button>
+        </div>
+
+        <div class="notification" id="notification"></div>
+    </div>
+
+    <script>
+        // Service Worker Registration for PWA
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('sw.js').catch(err => {
+                    console.log('Service Worker registration failed:', err);
+                });
+            });
+        }
+
+        // Create a simple service worker inline (will be written to separate file in real scenario)
+        // For demo purposes, we'll create it dynamically
+        const swContent = `
+            self.addEventListener('install', event => {
+                self.skipWaiting();
+            });
+            self.addEventListener('activate', event => {
+                event.waitUntil(clients.claim());
+            });
+        `;
+        const swBlob = new Blob([swContent], { type: 'application/javascript' });
+        const swUrl = URL.createObjectURL(swBlob);
+        
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register(swUrl);
+        }
+
+        // Application State
+        let contacts = JSON.parse(localStorage.getItem('ss_contacts') || '[]');
+
+        // DOM Elements
+        const mobileInput = document.getElementById('mobile');
+        const nameInput = document.getElementById('name');
+        const areaInput = document.getElementById('area');
+        const serviceSelect = document.getElementById('service');
+        const prefixInput = document.getElementById('prefix');
+        const addBtn = document.getElementById('addBtn');
+        const exportBtn = document.getElementById('exportBtn');
+        const clearBtn = document.getElementById('clearBtn');
+        const contactsContainer = document.getElementById('contactsContainer');
+        const counterElement = document.getElementById('counter');
+        const notification = document.getElementById('notification');
+
+        // Initialize
+        updateContactsList();
+        updateCounter();
+
+        // Event Listeners
+        addBtn.addEventListener('click', addContact);
+        exportBtn.addEventListener('click', exportVCF);
+        clearBtn.addEventListener('click', clearAllContacts);
+
+        // Input validation for mobile number
+        mobileInput.addEventListener('input', (e) => {
+            let value = e.target.value.replace(/\D/g, '');
+            if (value.length > 15) value = value.substring(0, 15);
+            e.target.value = value;
+        });
+
+        // Functions
+        function showNotification(message, isError = true) {
+            notification.textContent = message;
+            notification.style.background = isError ? '#ef4444' : '#10b981';
+            notification.classList.add('show');
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 3000);
+        }
+
+        function updateCounter() {
+            counterElement.textContent = contacts.length;
+        }
+
+        function updateContactsList() {
+            if (contacts.length === 0) {
+                contactsContainer.innerHTML = `
+                    <div class="empty-state">
+                        <span class="empty-icon">📞</span>
+                        <p>No contacts added yet</p>
+                        <p style="font-size: 14px; margin-top: 8px;">Add contacts using the form above</p>
+                    </div>
+                `;
+                return;
+            }
+
+            contactsContainer.innerHTML = `
+                <ul class="contacts-list">
+                    ${contacts.map(contact => `
+                        <li class="contact-item">
+                            <div class="contact-info">
+                                <div class="contact-name">${escapeHtml(contact.formattedName)}</div>
+                                <div class="contact-number">${formatPhoneNumber(contact.mobile)}</div>
+                            </div>
+                        </li>
+                    `).join('')}
+                </ul>
+            `;
+        }
+
+        function addContact() {
+            // Get and validate mobile number
+            const mobile = mobileInput.value.trim();
+            if (mobile.length < 10) {
+                showNotification('Please enter a valid 10+ digit mobile number');
+                mobileInput.focus();
+                return;
+            }
+
+            // Check for duplicate mobile number
+            if (contacts.some(contact => contact.mobile === mobile)) {
+                showNotification('This mobile number already exists in contacts');
+                return;
+            }
+
+            // Get other values
+            const name = nameInput.value.trim() || 'Unknown';
+            const area = areaInput.value.trim().toUpperCase() || 'UNK';
+            const service = serviceSelect.value.toUpperCase();
+            const prefix = prefixInput.value.trim().toUpperCase() || 'SS';
+
+            // Generate formatted name
+            const formattedName = `${prefix}-${area}-${service}-${cleanName(name)}`;
+
+            // Add to contacts array
+            const contact = {
+                mobile,
+                name: cleanName(name),
+                area,
+                service,
+                prefix,
+                formattedName,
+                timestamp: new Date().toISOString()
+            };
+
+            contacts.push(contact);
+            
+            // Save to localStorage
+            localStorage.setItem('ss_contacts', JSON.stringify(contacts));
+            
+            // Update UI
+            updateContactsList();
+            updateCounter();
+            
+            // Clear inputs (except prefix and service)
+            mobileInput.value = '';
+            nameInput.value = '';
+            areaInput.value = '';
+            mobileInput.focus();
+            
+            // Show success notification
+            showNotification('Contact added successfully!', false);
+        }
+
+        function exportVCF() {
+            if (contacts.length === 0) {
+                showNotification('No contacts to export');
+                return;
+            }
+
+            // Generate VCF content (vCard 3.0)
+            let vcfContent = '';
+            
+            contacts.forEach((contact, index) => {
+                vcfContent += `BEGIN:VCARD
+VERSION:3.0
+FN:${contact.formattedName}
+N:;${contact.formattedName};;;
+TEL;TYPE=CELL:${contact.mobile}
+END:VCARD\n`;
+            });
+
+            // Create blob and download link
+            const blob = new Blob([vcfContent], { type: 'text/vcard' });
+            const url = URL.createObjectURL(blob);
+            
+            // Generate filename with current date
+            const now = new Date();
+            const dateStr = now.toISOString().split('T')[0];
+            const filename = `SS_Leads_${dateStr}.vcf`;
+            
+            // Create temporary link and trigger download
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = filename;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            
+            // Clean up URL object
+            setTimeout(() => URL.revokeObjectURL(url), 100);
+            
+            // Show success notification
+            showNotification(`Exported ${contacts.length} contacts`, false);
+        }
+
+        function clearAllContacts() {
+            if (contacts.length === 0) {
+                showNotification('No contacts to clear');
+                return;
+            }
+
+            if (confirm(`Are you sure you want to delete all ${contacts.length} contacts?`)) {
+                contacts = [];
+                localStorage.removeItem('ss_contacts');
+                updateContactsList();
+                updateCounter();
+                showNotification('All contacts cleared', false);
+            }
+        }
+
+        // Utility Functions
+        function cleanName(name) {
+            return name
+                .trim()
+                .replace(/\s+/g, ' ') // Replace multiple spaces with single space
+                .replace(/[^\w\s-]/g, '') // Remove special characters except hyphen and underscore
+                .replace(/\s/g, '-') // Replace spaces with hyphens
+                .toUpperCase();
+        }
+
+        function formatPhoneNumber(phone) {
+            return phone.replace(/(\d{3})(\d{3})(\d{4})/, '$1-$2-$3');
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // PWA Install Prompt (optional)
+        let deferredPrompt;
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            
+            // Show install button or notification (optional enhancement)
+            setTimeout(() => {
+                if (confirm('Install SS Contact Manager as an app for better experience?')) {
+                    deferredPrompt.prompt();
+                    deferredPrompt.userChoice.then(() => {
+                        deferredPrompt = null;
+                    });
+                }
+            }, 3000);
+        });
+
+        // Prevent form submission on Enter key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' && e.target.tagName !== 'TEXTAREA') {
+                e.preventDefault();
+            }
+        });
+
+        // Auto-save on page unload
+        window.addEventListener('beforeunload', () => {
+            localStorage.setItem('ss_contacts', JSON.stringify(contacts));
+        });
+
+        // Initialize with focus on mobile input
+        mobileInput.focus();
+    </script>
+</body>
+</html>
+```
